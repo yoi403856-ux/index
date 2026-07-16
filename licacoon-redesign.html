@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LICACOON — питомник мейн-кунов в Москве</title>
+<meta name="description" content="Питомник мейн-кунов LICACOON, Москва. Регистрация TICA №23719 и WCF №003459.12 с 2012 года. Котята уезжают после трёх месяцев — привитые, с ветпаспортом, метрикой и договором.">
+<meta property="og:title" content="LICACOON — питомник мейн-кунов в Москве">
+<meta property="og:description" content="Котята мейн-куна от домашнего питомника с регистрацией TICA и WCF. Москва, Михалковская 26к1.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Golos+Text:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* Палитра снята пипеткой с их же студийных фотографий */
+    --sweep:#c0cad8;        /* фон, на котором сняты все котята (среднее по краям их снимков) */
+    --paper:#e5eaf1;        /* светлый разворот */
+    --royal:#1150c6;        /* фон, на котором сняты взрослые коты */
+    --royal-deep:#0a3a94;
+    --ink:#16202f;
+    --muted:#5b6779;
+    --ginger:#b8541f;       /* окрас Ульриха — метка «свободен» */
+    --white:#f7f9fc;
+    --line:rgba(22,32,47,.16);
+    --line-soft:rgba(22,32,47,.09);
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--sweep);
+    color:var(--ink);
+    font-family:'Golos Text',system-ui,sans-serif;
+    font-size:16.5px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  /* height:auto обязателен: у img проставлены width/height, иначе кадр сплющивает */
+  img{display:block;max-width:100%;height:auto}
+  a{color:inherit;text-decoration:none}
+  h1,h2,h3{font-family:'Literata',Georgia,serif;font-weight:600;line-height:1.14;letter-spacing:-.015em}
+  .wrap{max-width:1140px;margin:0 auto;padding:0 22px}
+  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+  :where(a,button,summary):focus-visible{
+    outline:2px solid var(--royal);outline-offset:3px;border-radius:4px;
+  }
+
+  /* Подпись-рубрика: используется только там, где есть настоящий код или дата */
+  .tag{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  }
+
+  /* ---------- Шапка ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(194,204,221,.82);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid transparent;transition:border-color .3s var(--ease),background .3s var(--ease);
+  }
+  header.stuck{border-bottom-color:var(--line-soft);background:rgba(194,204,221,.94)}
+  .nav{display:flex;align-items:center;gap:26px;height:70px}
+  .brand{display:flex;flex-direction:column;line-height:1.15}
+  .brand b{font-family:'Literata',serif;font-size:19px;font-weight:700;letter-spacing:.06em}
+  .brand span{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+  .navlinks{display:flex;gap:24px;margin-left:auto}
+  .navlinks a{font-size:14.5px;color:var(--muted);position:relative;transition:color .2s}
+  .navlinks a::after{content:'';position:absolute;left:0;bottom:-5px;height:1.5px;width:0;background:var(--ink);transition:width .25s var(--ease)}
+  .navlinks a:hover{color:var(--ink)}
+  .navlinks a:hover::after{width:100%}
+  .navtel{
+    font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:500;
+    padding:9px 15px;border:1.5px solid var(--ink);border-radius:2px;white-space:nowrap;
+    transition:background .2s,color .2s;
+  }
+  .navtel:hover{background:var(--ink);color:var(--sweep)}
+
+  /* ---------- Мобильное меню ---------- */
+  /* flex:none обязателен — иначе строка шапки сжимает кнопку до 20px и по ней не попасть */
+  .burger{
+    display:none;flex:none;width:44px;height:44px;padding:13px 10px;margin-right:-10px;
+    background:none;border:0;cursor:pointer;flex-direction:column;justify-content:space-between;
+  }
+  .burger span{display:block;height:1.5px;background:var(--ink);transition:transform .25s var(--ease),opacity .2s}
+  .burger[aria-expanded="true"] span:nth-child(1){transform:translateY(8.25px) rotate(45deg)}
+  .burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+  .burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-8.25px) rotate(-45deg)}
+  /* Меню накрывает страницу, а не раздвигает её: иначе липкая шапка
+     вырастает на пол-экрана и весь контент прыгает вниз. */
+  .mobilenav{
+    display:none;flex-direction:column;
+    position:absolute;top:100%;left:0;right:0;
+    background:rgba(194,204,221,.97);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-top:1px solid var(--line-soft);
+    box-shadow:0 12px 24px rgba(22,32,47,.1);
+    padding:4px 22px 14px;
+  }
+  .mobilenav a{
+    padding:13px 0;font-size:16px;border-bottom:1px solid var(--line-soft);
+  }
+  .mobilenav a:last-child{border-bottom:0}
+
+  /* ---------- Лайтбокс ---------- */
+  .lb{
+    position:fixed;inset:0;z-index:100;
+    background:rgba(14,20,30,.92);
+    display:flex;align-items:center;justify-content:center;
+    padding:20px;
+  }
+  .lb[hidden]{display:none}
+  .lb-img{
+    max-width:min(92vw,900px);max-height:82vh;width:auto;height:auto;
+    border-radius:2px;box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .lb-cap{
+    position:absolute;left:0;right:0;bottom:22px;text-align:center;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.08em;
+    color:rgba(247,249,252,.72);padding:0 60px;
+  }
+  .lb button{
+    position:absolute;background:none;border:0;cursor:pointer;
+    color:var(--white);font-family:'Golos Text',sans-serif;line-height:1;
+    opacity:.65;transition:opacity .2s;
+  }
+  .lb button:hover{opacity:1}
+  .lb-close{top:18px;right:20px;font-size:34px;width:44px;height:44px}
+  .lb-prev,.lb-next{top:50%;transform:translateY(-50%);font-size:44px;width:52px;height:70px}
+  .lb-prev{left:12px}
+  .lb-next{right:12px}
+  .lb.single .lb-prev,.lb.single .lb-next{display:none}
+  [data-gallery]{cursor:zoom-in}
+  body.lb-open{overflow:hidden}
+
+  /* ---------- Кнопки ---------- */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;
+    font-family:'Golos Text',sans-serif;font-size:15.5px;font-weight:500;
+    padding:14px 24px;border:1.5px solid transparent;border-radius:2px;cursor:pointer;
+    transition:transform .18s var(--ease),background .2s,color .2s,border-color .2s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-solid{background:var(--ink);color:var(--sweep)}
+  .btn-solid:hover{background:var(--royal)}
+  .btn-line{border-color:var(--ink);color:var(--ink)}
+  .btn-line:hover{background:var(--ink);color:var(--sweep)}
+  .btn-light{background:var(--white);color:var(--ink)}
+  .btn-light:hover{background:var(--sweep)}
+  .btn-ghost{border-color:rgba(247,249,252,.5);color:var(--white)}
+  .btn-ghost:hover{background:var(--white);color:var(--royal)}
+
+  /* ---------- Подпись макета: снимок растворяется в странице ---------- */
+  /* Все котята сняты на одном фоне. Страница залита им же, а края кадра
+     уводятся в прозрачность — рамка исчезает, кот остаётся лежать на странице. */
+  .dissolve{
+    -webkit-mask-image:radial-gradient(72% 80% at 50% 48%,#000 52%,rgba(0,0,0,0) 100%);
+    mask-image:radial-gradient(72% 80% at 50% 48%,#000 52%,rgba(0,0,0,0) 100%);
+  }
+  /* В сетке кадры мельче — перо мягче, иначе съедает лапы и кисточки.
+     Правило простое: снятое на студийном фоне растворяется, снятое в других
+     местах (дома, на синем) остаётся кадром в рамке. */
+  .kitten-photo img,.color-item img{
+    -webkit-mask-image:radial-gradient(84% 90% at 50% 50%,#000 60%,rgba(0,0,0,0) 100%);
+    mask-image:radial-gradient(84% 90% at 50% 50%,#000 60%,rgba(0,0,0,0) 100%);
+  }
+
+  /* ---------- Первый экран ---------- */
+  .hero{padding:26px 0 76px;position:relative}
+  .hero-grid{display:grid;grid-template-columns:1.02fr 1fr;gap:28px;align-items:center}
+  .hero-copy{max-width:560px}
+  .hero h1{font-size:clamp(38px,4.6vw,56px);font-weight:700;margin:16px 0 0;text-wrap:balance}
+  .hero p{margin-top:20px;font-size:17.5px;color:#38455a}
+  /* Живая строка наличия. Заголовок говорит то, что верно всегда,
+     а эта строка — то, что меняется с каждым помётом, и правится одним абзацем */
+  .avail{
+    display:flex;align-items:center;gap:14px;margin-top:28px;
+    padding:14px 18px;background:rgba(247,249,252,.55);
+    border:1px solid var(--line-soft);border-radius:3px;
+    transition:background .2s var(--ease),border-color .2s var(--ease);
+  }
+  .avail:hover{background:rgba(247,249,252,.9);border-color:var(--line)}
+  .avail-dot{width:9px;height:9px;border-radius:50%;background:var(--ginger);flex:none}
+  /* basis:0, иначе длинный текст не помещается рядом с точкой и переносится целиком */
+  .avail-text{font-size:14.5px;line-height:1.45;flex:1 1 0;min-width:0}
+  .avail-text b{font-weight:600}
+  .avail-go{
+    margin-left:auto;white-space:nowrap;color:var(--muted);
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+    letter-spacing:.12em;text-transform:uppercase;transition:color .2s;
+  }
+  .avail:hover .avail-go{color:var(--ink)}
+  .hero-cta{display:flex;gap:12px;margin-top:24px;flex-wrap:wrap}
+  .hero-photo{position:relative}
+  .hero-photo img{width:100%;height:auto}
+  /* появление */
+  .hero-copy>*,.hero-photo{opacity:0;transform:translateY(16px);animation:rise .8s var(--ease) forwards}
+  .hero-photo{animation-delay:.05s;transform:none;opacity:0;animation-name:fade}
+  .hero-copy .tag{animation-delay:.12s}
+  .hero-copy h1{animation-delay:.2s}
+  .hero-copy p{animation-delay:.3s}
+  .hero-copy .avail{animation-delay:.38s}
+  .hero-copy .hero-cta{animation-delay:.46s}
+  @keyframes rise{to{opacity:1;transform:translateY(0)}}
+  @keyframes fade{to{opacity:1}}
+
+  /* ---------- Общая секция ---------- */
+  section{padding:76px 0}
+  /* иначе липкая шапка накрывает заголовок при переходе по якорю */
+  section[id]{scroll-margin-top:82px}
+  .head{max-width:640px;margin-bottom:38px}
+  .head h2{font-size:clamp(28px,3.4vw,40px);margin-top:12px}
+  .head p{margin-top:14px;color:var(--muted);font-size:16.5px}
+
+  /* ---------- Помёт ---------- */
+  .litter{margin-bottom:64px}
+  .litter:last-of-type{margin-bottom:0}
+  .litter-head{
+    display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;
+    padding-bottom:16px;border-bottom:1px solid var(--line);margin-bottom:30px;
+  }
+  .litter-meta{min-width:0}
+  /* Буква помёта — так питомники и называют котят: весь помёт на одну букву */
+  .litter-letter{
+    font-family:'Literata',serif;font-size:52px;font-weight:700;line-height:.8;
+    color:var(--ink);opacity:.22;flex:none;
+  }
+  .litter-meta h3{font-size:21px;font-weight:600}
+  .litter-meta .parents{margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted)}
+
+  .kittens{display:grid;grid-template-columns:repeat(3,1fr);gap:26px 20px}
+  .kitten{position:relative}
+  .kitten-photo{position:relative;aspect-ratio:6/5}
+  .kitten-photo img{
+    width:100%;height:100%;object-fit:cover;
+    transition:transform .5s var(--ease),filter .4s var(--ease);
+  }
+  .kitten:hover .kitten-photo img{transform:scale(1.035)}
+  .kitten-info{margin-top:2px;display:flex;align-items:baseline;gap:10px}
+  .kitten-info h4{font-family:'Literata',serif;font-size:19px;font-weight:600}
+  .kitten-info .ru{font-size:13.5px;color:var(--muted)}
+  .kitten-color{margin-top:3px;font-size:14px;color:var(--muted)}
+  .status{
+    display:inline-block;margin-top:10px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    letter-spacing:.13em;text-transform:uppercase;
+    padding:5px 10px;border-radius:2px;
+  }
+  .s-free{background:var(--ginger);color:#fff}
+  .s-reserve{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+  .s-home{background:transparent;color:var(--muted);border:1.5px solid var(--line)}
+  /* уехавшие — приглушены, чтобы свободные читались первыми */
+  .kitten.gone .kitten-photo img{filter:saturate(.45) opacity(.62)}
+  .kitten.gone:hover .kitten-photo img{filter:saturate(.8) opacity(.85)}
+
+  /* Их собственная система статусов — просто перенесена на видное место */
+  .legend{
+    margin-top:52px;padding:24px 26px;background:rgba(247,249,252,.5);
+    border:1px solid var(--line-soft);border-radius:3px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:22px;
+  }
+  .legend div{font-size:13.5px;color:var(--muted);line-height:1.5}
+  .legend b{
+    display:block;font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;
+    letter-spacing:.13em;color:var(--ink);margin-bottom:6px;
+  }
+
+  /* ---------- Доверие (синяя полоса — фон их взрослых портретов) ---------- */
+  .trust{background:var(--royal);color:var(--white)}
+  .trust .tag{color:rgba(247,249,252,.62)}
+  .trust h2{color:var(--white)}
+  .trust .head p{color:rgba(247,249,252,.78)}
+  .trust-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:44px;align-items:start}
+  .checks{display:grid;gap:0}
+  .checks li{
+    list-style:none;display:grid;grid-template-columns:auto 1fr;gap:16px;
+    padding:18px 0;border-bottom:1px solid rgba(247,249,252,.18);
+  }
+  .checks li:first-child{border-top:1px solid rgba(247,249,252,.18)}
+  .checks .n{font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(247,249,252,.5);padding-top:3px}
+  .checks b{display:block;font-weight:600;font-size:16.5px;margin-bottom:3px}
+  .checks span{color:rgba(247,249,252,.72);font-size:14.5px;line-height:1.55}
+  .certs{display:grid;gap:14px}
+  .cert{background:var(--white);padding:10px;border-radius:2px}
+  .cert img{width:100%}
+  .cert figcaption{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);
+    padding:8px 2px 2px;letter-spacing:.06em;
+  }
+
+  /* ---------- О питомнике ---------- */
+  .about{background:var(--paper)}
+  /* Заголовок слева, текст справа; снимок ниже во всю ширину — он снят
+     широкой полосой, и это его настоящая форма, а не половина колонки */
+  .about-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:44px;align-items:start}
+  .about h2{font-size:clamp(28px,3.4vw,38px);margin-top:12px}
+  .about p{color:#38455a}
+  .about p + p{margin-top:16px}
+  .about-photo{margin-top:44px}
+  .about-photo img{width:100%}
+  .about-photo figcaption{
+    margin-top:12px;font-size:13.5px;color:var(--muted);max-width:640px;
+  }
+  .about .sig{
+    margin-top:26px;padding-top:18px;border-top:1px solid var(--line);
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--muted);
+  }
+
+  /* ---------- Окрасы ---------- */
+  /* ---------- Производители ---------- */
+  /* Взрослых питомник снимает на синем фоне — значит и полоса синяя,
+     и коты растворяются в ней так же, как котята в сером */
+  .queens{background:var(--royal);color:var(--white)}
+  .queens .tag{color:rgba(247,249,252,.62)}
+  .queens h2{color:var(--white)}
+  .queens .head p{color:rgba(247,249,252,.78)}
+  .queens-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px 14px}
+  .queen-photo{aspect-ratio:6/5}
+  .queen-photo img{
+    width:100%;height:100%;object-fit:cover;
+    -webkit-mask-image:radial-gradient(84% 90% at 50% 50%,#000 58%,rgba(0,0,0,0) 100%);
+    mask-image:radial-gradient(84% 90% at 50% 50%,#000 58%,rgba(0,0,0,0) 100%);
+  }
+  .queen h4{font-family:'Literata',serif;font-size:16px;font-weight:600;line-height:1.25}
+  .queen .role{
+    margin-top:5px;font-family:'IBM Plex Mono',monospace;font-size:11px;
+    letter-spacing:.08em;color:rgba(247,249,252,.62);line-height:1.7;
+  }
+
+  /* Выпускники сняты не в студии, а дома и во дворе — поэтому они не растворяются,
+     а лежат на странице отдельными снимками. Контраст студии и живой жизни намеренный. */
+  .grads{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+  .grads img{width:100%;aspect-ratio:5/4;object-fit:cover;border-radius:2px}
+  .grads-note{
+    margin-top:26px;padding-top:20px;border-top:1px solid var(--line);
+    font-size:15px;color:var(--muted);max-width:720px;
+  }
+
+  /* ---------- Взрослые кошки ---------- */
+  .adults{background:var(--paper)}
+  .adults-inner{
+    display:grid;grid-template-columns:1fr 1.15fr;gap:40px;align-items:center;
+  }
+  .adults h2{font-size:clamp(24px,2.8vw,32px);margin-top:12px}
+  .adults p{margin-top:14px;color:#38455a}
+  /* её собственные слова с сайта — поэтому в кавычках и курсивом, а не как наш текст */
+  .quote{
+    margin:18px 0 22px;padding-left:16px;border-left:2px solid var(--ginger);
+    font-family:'Literata',Georgia,serif;font-size:17px;font-style:italic;color:var(--ink);
+  }
+  .adults-photos{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .adults-photos img{width:100%;aspect-ratio:5/4;object-fit:cover;border-radius:2px}
+
+  /* ---------- Контакты ---------- */
+  .contact{background:var(--royal);color:var(--white)}
+  .contact .tag{color:rgba(247,249,252,.62)}
+  .contact h2{color:var(--white);font-size:clamp(28px,3.4vw,40px);margin-top:12px}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:start;margin-top:36px}
+  .tel-big{
+    font-family:'IBM Plex Mono',monospace;font-size:clamp(26px,3.6vw,38px);font-weight:600;
+    letter-spacing:-.02em;display:inline-block;
+    border-bottom:2px solid rgba(247,249,252,.35);padding-bottom:4px;transition:border-color .2s;
+  }
+  .tel-big:hover{border-bottom-color:var(--white)}
+  .tel-who{font-size:14px;color:rgba(247,249,252,.7);margin-top:10px}
+  .contact-cta{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+  .contact dl{display:grid;grid-template-columns:auto 1fr;gap:14px 22px;font-size:15px}
+  .contact dt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:.13em;text-transform:uppercase;color:rgba(247,249,252,.55);padding-top:3px}
+  .contact dd a{border-bottom:1px solid rgba(247,249,252,.35)}
+  .contact dd a:hover{border-bottom-color:var(--white)}
+
+  footer{background:var(--royal-deep);color:rgba(247,249,252,.6);padding:26px 0;font-size:13px}
+  .foot{display:flex;gap:18px;justify-content:space-between;flex-wrap:wrap}
+
+  /* ---------- Адаптив ---------- */
+  @media (max-width:940px){
+    .hero-grid{grid-template-columns:1fr;gap:8px}
+    .hero-copy{max-width:none;order:2}
+    .hero-photo{order:1}
+    .hero{padding-top:12px}
+    .trust-grid,.adults-inner,.contact-grid{grid-template-columns:1fr;gap:32px}
+    .about-grid{grid-template-columns:1fr;gap:18px}
+    .kittens{grid-template-columns:repeat(2,1fr)}
+    .grads{grid-template-columns:repeat(4,1fr)}
+    .queens-grid{grid-template-columns:repeat(3,1fr)}
+    .legend{grid-template-columns:repeat(2,1fr)}
+    .navlinks{display:none}
+    .burger{display:flex}
+    .mobilenav:not([hidden]){display:flex}
+    .certs{grid-template-columns:1fr 1fr;display:grid}
+  }
+  @media (max-width:560px){
+    section{padding:56px 0}
+    .grads{grid-template-columns:repeat(3,1fr);gap:6px}
+    .queens-grid{grid-template-columns:repeat(2,1fr)}
+    .legend{grid-template-columns:1fr;padding:20px}
+    .litter-head{gap:0 14px;align-items:center}
+    .litter-letter{font-size:38px}
+    .litter-meta{flex:1 1 0}
+    .kitten-info{flex-direction:column;gap:1px}
+    .hero-cta .btn,.contact-cta .btn{flex:1 1 100%;justify-content:center}
+    .avail{flex-wrap:wrap;gap:0 12px}
+    .avail-go{margin-left:21px;margin-top:8px;flex:1 1 100%}
+    .brand span{display:none}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    .hero-copy>*,.hero-photo{opacity:1;transform:none}
+  }
+</style>
+</head>
+<body>
+<!-- Якорь начала страницы. На самой шапке его держать нельзя: она липкая,
+     то есть видна всегда, и браузер считает, что прокручивать уже некуда. -->
+<span id="top" aria-hidden="true"></span>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">
+      <b>LICACOON</b>
+      <span>Питомник мейн-кунов · Москва</span>
+    </a>
+    <nav class="navlinks">
+      <a href="#kittens">Котята</a>
+      <a href="#trust">Условия</a>
+      <a href="#about">О питомнике</a>
+      <a href="#queens">Наши кошки</a>
+      <a href="#grads">Выпускники</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <a class="navtel" href="tel:+79031077830">8 903 107-78-30</a>
+    <button class="burger" aria-label="Меню" aria-expanded="false" aria-controls="mobilenav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <nav class="mobilenav" id="mobilenav" hidden>
+    <a href="#kittens">Котята</a>
+    <a href="#trust">Условия</a>
+    <a href="#about">О питомнике</a>
+    <a href="#queens">Наши кошки</a>
+    <a href="#grads">Выпускники</a>
+    <a href="#contact">Контакты</a>
+  </nav>
+</header>
+
+<!-- Первый экран: не абстрактный оффер, а конкретная кошечка, которая свободна сегодня -->
+<main>
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="tag">TICA №23719 · WCF №003459.12 · с 2012 года</span>
+      <h1>Домашний питомник мейн-кунов в Москве</h1>
+      <p>Разводим по международным стандартам породы — растим красивых, крупных, здоровых и уравновешенных домашних любимцев. Кошки живут в квартире, а не в вольерах.</p>
+      <a class="avail" href="#kittens">
+        <span class="avail-dot"></span>
+        <span class="avail-text"><b>Свободна одна кошечка</b> — Ласка, черепаховая, помёт от 22 января</span>
+        <span class="avail-go">Смотреть</span>
+      </a>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="tel:+79031077830">Позвонить в питомник</a>
+        <a class="btn btn-line" href="https://wa.me/79031077830" target="_blank" rel="noopener">Написать в WhatsApp</a>
+      </div>
+    </div>
+    <figure class="hero-photo">
+      <img class="dissolve" src="https://licacoon.ru/images/cats/kittens/laska/laska29.jpg"
+           referrerpolicy="no-referrer"
+           alt="Ласка — черепаховая кошечка мейн-кун из питомника LICACOON" width="800" height="661">
+    </figure>
+  </div>
+</section>
+
+<!-- Витрина: пометы названы по буквам — так их и ведёт питомник -->
+<section id="kittens">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Котята</span>
+      <h2>Наши котята</h2>
+      <p>Показываем помёты целиком, вместе с уехавшими: так видно, каких котят даёт пара. Актуальный статус — под каждым котёнком.</p>
+    </div>
+
+    <div class="litter">
+      <div class="litter-head">
+        <div class="litter-letter">L</div>
+        <div class="litter-meta">
+          <h3>Помёт от 22.01.2026</h3>
+          <div class="parents">Ulrich Licacun · MCO d22 &nbsp;×&nbsp; Greta Licacun · MCO ns22</div>
+        </div>
+      </div>
+      <div class="kittens">
+
+        <figure class="kitten pick">
+          <div class="kitten-photo" data-caption="Laska (Ласка) · черепаховый" data-gallery="https://licacoon.ru/images/cats/kittens/laska/laska26.jpg|https://licacoon.ru/images/cats/kittens/laska/laska27.jpg|https://licacoon.ru/images/cats/kittens/laska/laska28.jpg|https://licacoon.ru/images/cats/kittens/laska/laska29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/laska/laska26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Кошечка Ласка, черепаховый окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Laska</h4><span class="ru">Ласка · кошечка</span></div>
+            <div class="kitten-color">Черепаховый</div>
+            <span class="status s-free">Свободна</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten">
+          <div class="kitten-photo" data-caption="Larsi (Ларси) · черепаховый серебристый мрамор" data-gallery="https://licacoon.ru/images/cats/kittens/larsi/larsi26.jpg|https://licacoon.ru/images/cats/kittens/larsi/larsi27.jpg|https://licacoon.ru/images/cats/kittens/larsi/larsi28.jpg|https://licacoon.ru/images/cats/kittens/larsi/larsi29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/larsi/larsi26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Кошечка Ларси, черепаховый серебристый мрамор" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Larsi</h4><span class="ru">Ларси · кошечка</span></div>
+            <div class="kitten-color">Черепаховый серебристый мрамор</div>
+            <span class="status s-reserve">Резерв</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten gone">
+          <div class="kitten-photo" data-caption="Lamar (Ламар) · серебристый мраморный" data-gallery="https://licacoon.ru/images/cats/kittens/lamar/lamar26.jpg|https://licacoon.ru/images/cats/kittens/lamar/lamar27.jpg|https://licacoon.ru/images/cats/kittens/lamar/lamar28.jpg|https://licacoon.ru/images/cats/kittens/lamar/lamar29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/lamar/lamar26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Котик Ламар, серебристый мраморный окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Lamar</h4><span class="ru">Ламар · котик</span></div>
+            <div class="kitten-color">Серебристый мраморный</div>
+            <span class="status s-home">Новый дом</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten gone">
+          <div class="kitten-photo" data-caption="Larson (Ларсон) · чёрный мраморный" data-gallery="https://licacoon.ru/images/cats/kittens/larson/larson26.jpg|https://licacoon.ru/images/cats/kittens/larson/larson27.jpg|https://licacoon.ru/images/cats/kittens/larson/larson28.jpg|https://licacoon.ru/images/cats/kittens/larson/larson29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/larson/larson26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Котик Ларсон, чёрный мраморный окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Larson</h4><span class="ru">Ларсон · котик</span></div>
+            <div class="kitten-color">Чёрный мраморный</div>
+            <span class="status s-home">Новый дом</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten gone">
+          <div class="kitten-photo" data-caption="Laki (Лаки) · серебристый мраморный" data-gallery="https://licacoon.ru/images/cats/kittens/laki/laki101.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/laki/laki101.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Котик Лаки, серебристый мраморный окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Laki</h4><span class="ru">Лаки · котик</span></div>
+            <div class="kitten-color">Серебристый мраморный</div>
+            <span class="status s-home">Новый дом</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten gone">
+          <div class="kitten-photo" data-caption="Laura (Лаура) · черепаховый серебристый мрамор" data-gallery="https://licacoon.ru/images/cats/kittens/laura/laura26.jpg|https://licacoon.ru/images/cats/kittens/laura/laura27.jpg|https://licacoon.ru/images/cats/kittens/laura/laura28.jpg|https://licacoon.ru/images/cats/kittens/laura/laura29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/laura/laura26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Кошечка Лаура, черепаховый серебристый мрамор" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Laura</h4><span class="ru">Лаура · кошечка</span></div>
+            <div class="kitten-color">Черепаховый серебристый мрамор</div>
+            <span class="status s-home">Новый дом</span>
+          </figcaption>
+        </figure>
+
+      </div>
+    </div>
+
+    <div class="litter">
+      <div class="litter-head">
+        <div class="litter-letter">M</div>
+        <div class="litter-meta">
+          <h3>Помёт от 29.01.2026</h3>
+          <div class="parents">Ulrich Licacun · MCO d22 &nbsp;×&nbsp; Gabriel Licacun · MCO fs22</div>
+        </div>
+      </div>
+      <div class="kittens">
+
+        <figure class="kitten">
+          <div class="kitten-photo" data-caption="Marseilles (Марсель) · серебристый мраморный" data-gallery="https://licacoon.ru/images/cats/kittens/marseilles/marseilles26.jpg|https://licacoon.ru/images/cats/kittens/marseilles/marseilles27.jpg|https://licacoon.ru/images/cats/kittens/marseilles/marseilles28.jpg|https://licacoon.ru/images/cats/kittens/marseilles/marseilles29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/marseilles/marseilles26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Котик Марсель, серебристый мраморный окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Marseilles</h4><span class="ru">Марсель · котик</span></div>
+            <div class="kitten-color">Серебристый мраморный</div>
+            <span class="status s-reserve">Резерв</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten gone">
+          <div class="kitten-photo" data-caption="Michelle (Мишель) · черепаховый" data-gallery="https://licacoon.ru/images/cats/kittens/michelle/michelle26.jpg|https://licacoon.ru/images/cats/kittens/michelle/michelle27.jpg|https://licacoon.ru/images/cats/kittens/michelle/michelle28.jpg|https://licacoon.ru/images/cats/kittens/michelle/michelle29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/michelle/michelle26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Кошечка Мишель, черепаховый окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Michelle</h4><span class="ru">Мишель · кошечка</span></div>
+            <div class="kitten-color">Черепаховый</div>
+            <span class="status s-home">Новый дом</span>
+          </figcaption>
+        </figure>
+
+        <figure class="kitten gone">
+          <div class="kitten-photo" data-caption="Malvina (Мальвина) · красный дымный" data-gallery="https://licacoon.ru/images/cats/kittens/malvina/malvina-26.jpg|https://licacoon.ru/images/cats/kittens/malvina/malvina-27.jpg|https://licacoon.ru/images/cats/kittens/malvina/malvina-28.jpg|https://licacoon.ru/images/cats/kittens/malvina/malvina-29.jpg">
+            <img src="https://licacoon.ru/images/cats/kittens/malvina/malvina-26.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Кошечка Мальвина, красный дымный окрас" width="800" height="661">
+          </div>
+          <figcaption>
+            <div class="kitten-info"><h4>Malvina</h4><span class="ru">Мальвина · кошечка</span></div>
+            <div class="kitten-color">Красный дымный</div>
+            <span class="status s-home">Новый дом</span>
+          </figcaption>
+        </figure>
+
+      </div>
+    </div>
+
+    <!-- Это дословно система статусов питомника, просто вынесена туда, где её видно -->
+    <div class="legend">
+      <div><b>Свободен</b>Котёнок ищет новый дом.</div>
+      <div><b>Интересуются</b>Котёнка выбрали, но задаток не внесён — он ещё может освободиться.</div>
+      <div><b>Резерв</b>Котёнка выбрали, задаток внесён.</div>
+      <div><b>Новый дом</b>Оплачен полностью, котёнок уже переехал.</div>
+    </div>
+  </div>
+</section>
+
+<!-- Доверие. Синий — фон, на котором питомник снимает взрослых котов -->
+<section class="trust" id="trust">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Документы и условия</span>
+      <h2>Что вы получаете вместе с котёнком</h2>
+      <p>Питомник зарегистрирован в двух международных системах с 2012 года. Ничего из этого не нужно просить отдельно — это входит в передачу котёнка.</p>
+    </div>
+    <div class="trust-grid">
+      <ul class="checks">
+        <li><span class="n">01</span><div><b>Возраст от трёх месяцев</b><span>Котята уезжают не раньше трёх месяцев — приученные к лотку и когтеточке.</span></div></li>
+        <li><span class="n">02</span><div><b>Международный ветпаспорт</b><span>С двукратной прививкой от вирусных инфекций.</span></div></li>
+        <li><span class="n">03</span><div><b>Клубная метрика</b><span>Документ о происхождении, по которому оформляется родословная.</span></div></li>
+        <li><span class="n">04</span><div><b>Договор в двух экземплярах</b><span>Подписывается обеими сторонами. Текст выложен на сайте — можно прочитать до визита.</span></div></li>
+        <li><span class="n">05</span><div><b>Родословные родителей открыты</b><span>Пара каждого помёта названа поимённо, с кодами окраса и датами рождения.</span></div></li>
+      </ul>
+      <div class="certs">
+        <figure class="cert">
+          <img src="https://licacoon.ru/images/tica.jpg" data-caption="Сертификат TICA №23719" data-gallery="https://licacoon.ru/images/tica.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Сертификат регистрации питомника LICACOON в TICA, №23719" width="900" height="408">
+          <figcaption>TICA №23719 · с 27.03.2012</figcaption>
+        </figure>
+        <figure class="cert">
+          <img src="https://licacoon.ru/images/WCF.jpg" data-caption="Сертификат WCF №003459.12" data-gallery="https://licacoon.ru/images/WCF.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Сертификат регистрации питомника LICACOON в WCF, №003459.12" width="800" height="552">
+          <figcaption>WCF №003459.12 · с 22.09.2012</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- О питомнике: фотография заводчицы с её же котами — лучший аргумент о размере породы -->
+<section class="about" id="about">
+  <div class="wrap">
+    <div class="about-grid">
+      <div>
+        <span class="tag">О питомнике</span>
+        <h2>Четырнадцать лет одной породы</h2>
+      </div>
+      <div>
+        <p>Питомник держит Светлана Фадеева. С 2012 года здесь занимаются только мейн-кунами — одна порода, одна квартира и никаких вольеров.</p>
+        <p>Мейн-кун — самая крупная порода кошек в мире: кошка вырастает до 5–7 кг, кот — до десяти. При этом навязываться они не умеют, максимум позволят себе соучастие в домашних хлопотах. И разговаривают не мяуканьем, а тихим щебетом.</p>
+      </div>
+    </div>
+    <figure class="about-photo">
+      <img src="https://licacoon.ru/cache/3/5326cc02a35b7c1506324b21455b18f1.jpg" data-caption="Светлана Фадеева и куны питомника" data-gallery="https://licacoon.ru/cache/3/5326cc02a35b7c1506324b21455b18f1.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Светлана Фадеева держит на руках взрослых мейн-кунов питомника LICACOON" width="824" height="190">
+      <figcaption>Светлана Фадеева и взрослые куны питомника. Снимки не постановочные — это и есть домашний масштаб породы.</figcaption>
+    </figure>
+    <div class="sig">Светлана Фадеева · владелец питомника · TICA №23719 · WCF №003459.12</div>
+  </div>
+</section>
+
+<!-- Наши кошки. Собрано не со страницы «Наши кошки» — она устарела и держит среди живых
+     кошку, умершую в 2019-м, — а с живой страницы котят, где эти пятеро названы
+     родителями помётов 2025–2026. Данные проверяемы по её же сайту. -->
+<section class="queens" id="queens">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Наши кошки</span>
+      <h2>Родители наших котят</h2>
+      <p>Пять кошек и котов, от которых родились помёты последнего года.</p>
+    </div>
+    <div class="queens-grid">
+
+      <figure class="queen">
+        <div class="queen-photo" data-caption="Ulrich Licacun · MCO d22" data-gallery="https://licacoon.ru/images/cats/kittens/ULRICH-AFR/ulrich501.jpg|https://licacoon.ru/images/cats/kittens/ULRICH-AFR/ulrich502.jpg|https://licacoon.ru/images/cats/kittens/ULRICH-AFR/ulrich503.jpg|https://licacoon.ru/images/cats/kittens/ULRICH-AFR/ulrich504.jpg">
+          <img src="https://licacoon.ru/images/cats/kittens/ULRICH-AFR/ulrich503.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Ulrich Licacun, кот мейн-кун красного окраса, производитель питомника LICACOON" width="800" height="661">
+        </div>
+        <figcaption>
+          <h4>Ulrich Licacun</h4>
+          <div class="role">кот · 08.03.2022<br>MCO d22<br>отец помётов L и M</div>
+        </figcaption>
+      </figure>
+
+      <figure class="queen">
+        <div class="queen-photo" data-caption="Greta Licacun · MCO ns22" data-gallery="https://licacoon.ru/images/cats/kittens/NOHKA/greta101.jpg|https://licacoon.ru/images/cats/kittens/NOHKA/greta102.jpg|https://licacoon.ru/images/cats/kittens/NOHKA/greta103.jpg|https://licacoon.ru/images/cats/kittens/NOHKA/greta104.jpg">
+          <img src="https://licacoon.ru/images/cats/kittens/NOHKA/greta101.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Greta Licacun, кошка мейн-кун, мать помёта L" width="800" height="661">
+        </div>
+        <figcaption>
+          <h4>Greta Licacun</h4>
+          <div class="role">кошка · 30.11.2024<br>MCO ns22<br>мать помёта L</div>
+        </figcaption>
+      </figure>
+
+      <figure class="queen">
+        <div class="queen-photo" data-caption="Gabriel Licacun · MCO fs22" data-gallery="https://licacoon.ru/images/cats/kittens/GABRIEL-ZOPKA/gabriel501.jpg|https://licacoon.ru/images/cats/kittens/GABRIEL-ZOPKA/gabriel502.jpg|https://licacoon.ru/images/cats/kittens/GABRIEL-ZOPKA/gabriel503.jpg|https://licacoon.ru/images/cats/kittens/GABRIEL-ZOPKA/gabriel504.jpg">
+          <img src="https://licacoon.ru/images/cats/kittens/GABRIEL-ZOPKA/gabriel501.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Gabriel Licacun, кошка мейн-кун, мать помёта M" width="800" height="661">
+        </div>
+        <figcaption>
+          <h4>Gabriel Licacun</h4>
+          <div class="role">кошка · 30.11.2024<br>MCO fs22<br>мать помёта M</div>
+        </figcaption>
+      </figure>
+
+      <figure class="queen">
+        <div class="queen-photo" data-caption="GICH Teddy Licacun · MCO ns22" data-gallery="https://licacoon.ru/images/cats/kittens/VASYA/vasya01.jpg|https://licacoon.ru/images/cats/kittens/VASYA/vasya02.jpg|https://licacoon.ru/images/cats/kittens/VASYA/vasya03.jpg|https://licacoon.ru/images/cats/kittens/VASYA/vasya04.jpg|https://licacoon.ru/images/cats/kittens/VASYA/vasya05.jpg|https://licacoon.ru/images/cats/kittens/VASYA/vasya06.jpg">
+          <img src="https://licacoon.ru/images/cats/kittens/VASYA/vasya02.jpg" referrerpolicy="no-referrer" loading="lazy" alt="GICH Teddy Licacun, кот мейн-кун, производитель питомника LICACOON" width="800" height="661">
+        </div>
+        <figcaption>
+          <h4>GICH Teddy Licacun</h4>
+          <div class="role">кот · 14.10.2021<br>MCO ns22<br>отец помёта K</div>
+        </figcaption>
+      </figure>
+
+      <figure class="queen">
+        <div class="queen-photo" data-caption="Victorycoon Nyusha · MCO g09" data-gallery="https://licacoon.ru/images/cats/kittens/TYSKA/tyska101.jpg|https://licacoon.ru/images/cats/kittens/TYSKA/tyska102.jpg|https://licacoon.ru/images/cats/kittens/TYSKA/tyska103.jpg|https://licacoon.ru/images/cats/kittens/TYSKA/tyska104.jpg">
+          <img src="https://licacoon.ru/images/cats/kittens/TYSKA/tyska101.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Victorycoon Nyusha, кошка мейн-кун, мать помёта K" width="800" height="661">
+        </div>
+        <figcaption>
+          <h4>Victorycoon Nyusha</h4>
+          <div class="role">кошка · 30.09.2024<br>MCO g09<br>мать помёта K</div>
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
+<!-- Выпускники. Окрас каждого котёнка уже написан на его карточке выше,
+     поэтому отдельный блок про окрасы был бы теми же котятами по второму разу. -->
+<section id="grads">
+  <div class="wrap">
+    <div class="head">
+      <span class="tag">Выпускники</span>
+      <h2>Кем вырастают наши котята</h2>
+      <p>С января 2018-го по июнь 2025-го в питомнике родилось тридцать пять помётов. Эти котята давно выросли.</p>
+    </div>
+    <div class="grads">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/macha01_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый мейн-кун, выпускник питомника LICACOON, рядом с ребёнком" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/dakota1_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый мейн-кун, выпускник питомника LICACOON, на дереве" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/artemida12_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый мейн-кун на руках у хозяйки" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/rimma02_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Мейн-куны, выпускники питомника LICACOON, зимой" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/elicha02_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый мейн-кун, выпускник питомника LICACOON, в саду" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/dorofey1_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый рыжий мейн-кун, выпускник питомника LICACOON" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/nixson02_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый чёрный мейн-кун, выпускник питомника LICACOON, на траве" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/doris_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый мейн-кун, выпускник питомника LICACOON, на диване" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/atos_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый рыжий мейн-кун, выпускник питомника LICACOON, на подоконнике" width="250" height="200">
+      <img src="https://licacoon.ru/modules/mod_otclientlogosscroller/assets/images/resize/dobryna1_crop_250x200.jpg" referrerpolicy="no-referrer" loading="lazy" alt="Взрослый мейн-кун, выпускник питомника LICACOON" width="250" height="200">
+    </div>
+    <p class="grads-note">
+      Каждый помёт в архиве — со своей страницей и фотографиями. Есть и раздел с фильмами о выпускниках.
+    </p>
+  </div>
+</section>
+
+<!-- Настоящее, редкое предложение питомника — стоит того, чтобы его было видно -->
+<section class="adults">
+  <div class="wrap adults-inner">
+    <div>
+      <span class="tag">В добрые руки</span>
+      <h2>Камила закончила племенную карьеру</h2>
+      <p>CH Kamila Licacoon, чемпион WCF. Родилась 24 октября 2014 года, окрас MCO ns — чёрный дымный. Питомник отдаёт её за символическую цену в очень добрые руки.</p>
+      <blockquote class="quote">«Очень жалко, не хочется расставаться, но…»</blockquote>
+      <a class="btn btn-line" href="tel:+79031077830">Спросить про Камилу</a>
+    </div>
+    <div class="adults-photos">
+      <img src="https://licacoon.ru/images/kamila12.jpg" data-caption="CH Kamila Licacoon · MCO ns" data-gallery="https://licacoon.ru/images/kamila12.jpg|https://licacoon.ru/images/kamila13.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila20.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila21.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila22.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila23.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila24.jpg" referrerpolicy="no-referrer" loading="lazy" alt="CH Kamila Licacoon, взрослая кошка мейн-кун чёрного дымного окраса" width="800" height="661">
+      <img src="https://licacoon.ru/images/cats/kittens/kamila/kamila23.jpg" data-caption="CH Kamila Licacoon · MCO ns" data-gallery="https://licacoon.ru/images/kamila12.jpg|https://licacoon.ru/images/kamila13.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila20.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila21.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila22.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila23.jpg|https://licacoon.ru/images/cats/kittens/kamila/kamila24.jpg" referrerpolicy="no-referrer" loading="lazy" alt="CH Kamila Licacoon, кошка мейн-кун питомника LICACOON" width="800" height="661">
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <span class="tag">Контакты</span>
+    <h2>Позвоните и приезжайте смотреть</h2>
+    <div class="contact-grid">
+      <div>
+        <a class="tel-big" href="tel:+79031077830">8 903 107-78-30</a>
+        <div class="tel-who">Владимир — звонок, WhatsApp, Viber, Telegram</div>
+        <div class="contact-cta">
+          <a class="btn btn-light" href="https://wa.me/79031077830" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn btn-ghost" href="https://t.me/LICACOON" target="_blank" rel="noopener">Telegram</a>
+        </div>
+      </div>
+      <dl>
+        <dt>Ещё телефон</dt>
+        <dd><a href="tel:+74991544492">+7 (499) 154-44-92</a> — Владимир, Светлана</dd>
+        <dt>Адрес</dt>
+        <dd>Москва, ул. Михалковская, д. 26, корп. 1<br>
+            <a href="http://maps.yandex.ru/org/1007166397/" target="_blank" rel="noopener">Схема проезда на карте</a></dd>
+        <dt>Питомник</dt>
+        <dd>TICA №23719 · WCF №003459.12</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span>© 2026 Питомник мейн-кунов LICACOON, Москва</span>
+    <span class="mono">TICA №23719 · WCF №003459.12</span>
+  </div>
+</footer>
+
+<div class="lb" hidden role="dialog" aria-modal="true" aria-label="Просмотр фотографии">
+  <button class="lb-close" aria-label="Закрыть">&times;</button>
+  <button class="lb-prev" aria-label="Предыдущее фото">&lsaquo;</button>
+  <img class="lb-img" src="" alt="">
+  <button class="lb-next" aria-label="Следующее фото">&rsaquo;</button>
+  <div class="lb-cap"></div>
+</div>
+
+<script>
+  // Тонкая линия под шапкой появляется только когда страница прокручена
+  const h = document.querySelector('header');
+  const onScroll = () => h.classList.toggle('stuck', window.scrollY > 8);
+  onScroll();
+  addEventListener('scroll', onScroll, {passive:true});
+
+  // Мобильное меню
+  const burger = document.querySelector('.burger');
+  const mnav = document.getElementById('mobilenav');
+  const setMenu = open => {
+    burger.setAttribute('aria-expanded', String(open));
+    mnav.hidden = !open;
+  };
+  burger.addEventListener('click', () => setMenu(mnav.hidden));
+  mnav.addEventListener('click', e => { if (e.target.tagName === 'A') setMenu(false); });
+
+  // Лайтбокс. Список кадров лежит в data-gallery самого блока,
+  // разделитель "|" — в путях он не встречается.
+  const lb = document.querySelector('.lb');
+  const lbImg = lb.querySelector('.lb-img');
+  const lbCap = lb.querySelector('.lb-cap');
+  let shots = [], at = 0, opener = null;
+
+  const show = () => {
+    lbImg.src = shots[at];
+    lbCap.textContent = shots.length > 1
+      ? `${opener.dataset.caption} · ${at + 1} из ${shots.length}`
+      : opener.dataset.caption;
+    lbImg.alt = opener.dataset.caption || '';
+  };
+  const openLb = el => {
+    opener = el;
+    shots = el.dataset.gallery.split('|');
+    at = 0;
+    lb.classList.toggle('single', shots.length < 2);
+    lb.hidden = false;
+    document.body.classList.add('lb-open');
+    show();
+    lb.querySelector('.lb-close').focus();
+  };
+  const closeLb = () => {
+    lb.hidden = true;
+    document.body.classList.remove('lb-open');
+    lbImg.src = '';
+    if (opener) { opener.focus(); opener = null; }
+  };
+  const step = d => { at = (at + d + shots.length) % shots.length; show(); };
+
+  document.querySelectorAll('[data-gallery]').forEach(el => {
+    el.tabIndex = 0;
+    el.setAttribute('role', 'button');
+    el.addEventListener('click', () => openLb(el));
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openLb(el); }
+    });
+  });
+
+  lb.querySelector('.lb-close').addEventListener('click', closeLb);
+  lb.querySelector('.lb-prev').addEventListener('click', () => step(-1));
+  lb.querySelector('.lb-next').addEventListener('click', () => step(1));
+  lb.addEventListener('click', e => { if (e.target === lb) closeLb(); });
+  addEventListener('keydown', e => {
+    if (lb.hidden) return;
+    if (e.key === 'Escape') closeLb();
+    if (shots.length > 1 && e.key === 'ArrowLeft') step(-1);
+    if (shots.length > 1 && e.key === 'ArrowRight') step(1);
+  });
+</script>
+</body>
+</html>
