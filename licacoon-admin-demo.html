@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LICACOON — демо панели управления</title>
+<style>
+  /* Плашка поверх админки: человек должен сразу понимать, что это витрина,
+     а не его рабочий сайт, и что кнопка «Сохранить» ничего не публикует. */
+  #demo-note{
+    position:fixed;left:0;right:0;bottom:0;z-index:99999;
+    background:#16202f;color:#f7f9fc;
+    font:14px/1.5 system-ui,sans-serif;
+    padding:11px 18px;text-align:center;
+  }
+  #demo-note b{color:#ffb87a}
+  #demo-note button{
+    margin-left:14px;background:none;border:1px solid rgba(247,249,252,.4);
+    color:inherit;border-radius:3px;padding:3px 10px;cursor:pointer;font-size:13px;
+  }
+  #nc-root{padding-bottom:44px}
+</style>
+</head>
+<body>
+
+<div id="demo-note">
+  Это <b>демонстрация панели</b> питомника LICACOON. Всё можно нажимать и менять,
+  но ничего не сохраняется и на сайт не публикуется.
+  <button onclick="this.parentNode.remove()">Скрыть</button>
+</div>
+
+<script>
+// Демо-хранилище Decap. В рабочем варианте на месте этих строк — настоящий
+// репозиторий, и кнопка «Сохранить» публикует изменения на сайт.
+// Тест-бэкенду нужны ОБЕ формы записи: список читается по плоскому ключу
+// "content/kittens", а карточка открывается обходом вложенного пути.
+(function () {
+  var L = 'Помёт L — 22.01.2026', M = 'Помёт M — 29.01.2026';
+  var UG = ['Ulrich Licacun (MCO d22)', 'Greta Licacun (MCO ns22)'];
+  var UB = ['Ulrich Licacun (MCO d22)', 'Gabriel Licacun (MCO fs22)'];
+  var B = 'https://licacoon.ru/images/cats/kittens/';
+
+  // имя, рус, пол, окрас, статус, помёт, родители, папка, кадры
+  var kittens = [
+    ['Laska','Ласка','Кошечка','Черепаховый','Свободен',L,UG,'laska',[26,27,28,29]],
+    ['Larsi','Ларси','Кошечка','Черепаховый серебристый мрамор','Резерв',L,UG,'larsi',[26,27,28,29]],
+    ['Lamar','Ламар','Котик','Серебристый мраморный','Новый дом',L,UG,'lamar',[26,27,28,29]],
+    ['Larson','Ларсон','Котик','Чёрный мраморный','Новый дом',L,UG,'larson',[26,27,28,29]],
+    ['Laki','Лаки','Котик','Серебристый мраморный','Новый дом',L,UG,'laki',[101]],
+    ['Laura','Лаура','Кошечка','Черепаховый серебристый мрамор','Новый дом',L,UG,'laura',[26,27,28,29]],
+    ['Marseilles','Марсель','Котик','Серебристый мраморный','Резерв',M,UB,'marseilles',[26,27,28,29]],
+    ['Michelle','Мишель','Кошечка','Черепаховый','Новый дом',M,UB,'michelle',[26,27,28,29]],
+    ['Malvina','Мальвина','Кошечка','Красный дымный','Новый дом',M,UB,'malvina',[26,27,28,29]]
+  ];
+
+  var queens = [
+    ['ulrich','Ulrich Licacun','Кот (производитель)','08.03.2022','MCO d22','ULRICH-AFR/ulrich503.jpg'],
+    ['greta','Greta Licacun','Кошка','30.11.2024','MCO ns22','NOHKA/greta101.jpg'],
+    ['gabriel','Gabriel Licacun','Кошка','30.11.2024','MCO fs22','GABRIEL-ZOPKA/gabriel501.jpg'],
+    ['teddy','GICH Teddy Licacun','Кот (производитель)','14.10.2021','MCO ns22','VASYA/vasya02.jpg'],
+    ['nyusha','Victorycoon Nyusha','Кошка','30.09.2024','MCO g09','TYSKA/tyska101.jpg']
+  ];
+
+  function shots(dir, nums) {
+    return nums.map(function (n) {
+      var f = (dir === 'malvina' ? 'malvina-' : dir) + n;
+      return B + dir + '/' + f + '.jpg';
+    });
+  }
+  function fm(lines) { return '---\n' + lines.join('\n') + '\n---\n'; }
+
+  var K = {};
+  kittens.forEach(function (k) {
+    var g = shots(k[7], k[8]);
+    var lines = [
+      'title: ' + k[0],
+      'name_ru: ' + k[1],
+      'sex: ' + k[2],
+      'color: ' + k[3],
+      'status: ' + k[4],
+      'litter: "' + k[5] + '"',
+      'father: "' + k[6][0] + '"',
+      'mother: "' + k[6][1] + '"',
+      'photo: "' + g[0] + '"',
+      'gallery:'
+    ].concat(g.map(function (u) { return '  - "' + u + '"'; }));
+    K[k[7] + '.md'] = { content: fm(lines) };
+  });
+
+  var Q = {};
+  queens.forEach(function (q) {
+    Q[q[0] + '.md'] = { content: fm([
+      'title: "' + q[1] + '"',
+      'role: "' + q[2] + '"',
+      'born: "' + q[3] + '"',
+      'ems: "' + q[4] + '"',
+      'photo: "' + B + q[5] + '"'
+    ]) };
+  });
+
+  window.repoFiles = {
+    'content/kittens': K,
+    'content/queens': Q,
+    content: { kittens: K, queens: Q }
+  };
+})();
+</script>
+
+<!-- Флаг обязан стоять ДО загрузки бандла, иначе Decap стартует сам
+     и лезет за config.yml, игнорируя настройки из CMS.init(). -->
+<script>window.CMS_MANUAL_INIT = true;</script>
+<script src="https://unpkg.com/decap-cms@^3.1.0/dist/decap-cms.js"></script>
+
+<script>
+CMS.init({
+  config: {
+    backend: { name: 'test-repo' },     // демо-режим: без репозитория, всё в браузере
+    load_config_file: false,
+    locale: 'ru',
+    media_folder: 'images/kittens',
+    public_folder: '/images/kittens',
+    collections: [
+      {
+        name: 'kittens',
+        label: 'Котята',
+        label_singular: 'Котёнка',
+        folder: 'content/kittens',
+        create: true,
+        delete: true,
+        identifier_field: 'title',
+        summary: '{{title}} ({{name_ru}}) — {{status}}',
+        sortable_fields: ['title', 'status', 'litter'],
+        fields: [
+          { name: 'title',   label: 'Имя',            widget: 'string', hint: 'Как в документах, латиницей' },
+          { name: 'name_ru', label: 'Имя по-русски',  widget: 'string', required: false },
+          { name: 'sex',     label: 'Пол',            widget: 'select', options: ['Кошечка', 'Котик'] },
+          { name: 'color',   label: 'Окрас',          widget: 'string' },
+          // Вот ради этого поля всё и затевается: статус выбирается,
+          // а не набирается руками и не красится пипеткой.
+          // Статус — токен, а род сайт выводит сам из поля «Пол»:
+          // для кошечки напишет «Свободна», для котика «Свободен».
+          { name: 'status',  label: 'Статус',         widget: 'select',
+            options: ['Свободен', 'Интересуются', 'Резерв', 'Новый дом'],
+            hint: 'Выбираете здесь — на сайте меняется само. Род подставится по полу котёнка' },
+          { name: 'litter',  label: 'Помёт',          widget: 'string' },
+          { name: 'father',  label: 'Отец',           widget: 'string', required: false },
+          { name: 'mother',  label: 'Мать',           widget: 'string', required: false },
+          { name: 'photo',   label: 'Главное фото',   widget: 'image' },
+          { name: 'gallery', label: 'Галерея',        widget: 'list', required: false,
+            summary: '{{fields.image}}',
+            field: { name: 'image', label: 'Фото', widget: 'image' },
+            hint: 'Перетащите сюда все кадры котёнка' }
+        ]
+      },
+      {
+        name: 'queens',
+        label: 'Наши кошки',
+        label_singular: 'Кошку или кота',
+        folder: 'content/queens',
+        create: true,
+        delete: true,
+        identifier_field: 'title',
+        summary: '{{title}} — {{ems}}',
+        fields: [
+          { name: 'title', label: 'Имя',   widget: 'string' },
+          { name: 'role',  label: 'Роль',  widget: 'select', options: ['Кошка', 'Кот (производитель)'] },
+          { name: 'born',  label: 'Дата рождения', widget: 'date', format: 'DD.MM.YYYY' },
+          { name: 'ems',   label: 'Код окраса (EMS)', widget: 'string', hint: 'Например: MCO ns22' },
+          { name: 'photo', label: 'Фото', widget: 'image' }
+        ]
+      }
+    ]
+  }
+});
+</script>
+</body>
+</html>
